@@ -46,6 +46,23 @@ def blendfitsdata(input_list, output_model):
 
 
 def blendmetadata(input_models, output_model):
+    """
+    
+    NOTES
+    =====
+    Implementation of blending of metadata directly from models with schemas
+    will need to take into account these issues.
+    
+     * Rules should be defined using full attributes from schema as returned by 
+    `schema.search_schema(model.schema,'meta')` instead of using FITS keywords.
+
+     * If different schemas are combined, then the superset of attributes will be
+    searched and used as the basis for the new output.
+    
+     * 
+    
+    
+    """
     final_rules = build_meta_rules(input_models)
 
     # Apply rules to each set of input headers
