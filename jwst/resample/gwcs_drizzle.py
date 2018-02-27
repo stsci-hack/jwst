@@ -103,8 +103,8 @@ class GWCSDrizzle:
 
         if self.outcon.ndim == 2:
             self.outcon = np.reshape(self.outcon, (1,
-                                     self.outcon.shape[0],
-                                     self.outcon.shape[1]))
+                                                   self.outcon.shape[0],
+                                                   self.outcon.shape[1]))
 
         elif self.outcon.ndim == 3:
             pass
@@ -120,12 +120,12 @@ class GWCSDrizzle:
         if util.is_blank(self.wt_scl):
             self.wt_scl = ''
         elif self.wt_scl != "exptime" and self.wt_scl != "expsq":
-            raise ValueError("Illegal value for wt_scl: %s" % out_units)
+            raise ValueError("Illegal value for wt_scl: %s" % self.wt_scl)
 
         if out_units == "counts":
             np.divide(self.outsci, self.outexptime, self.outsci)
         elif out_units != "cps":
-            raise ValueError("Illegal value for wt_scl: %s" % out_units)
+            raise ValueError("Illegal units for output %s" % out_units)
 
 
     def add_image(self, insci, inwcs, inwht=None,
@@ -212,12 +212,12 @@ class GWCSDrizzle:
         self.increment_id()
 
         dodrizzle(insci, inwcs, inwht, self.outwcs,
-                            self.outsci, self.outwht, self.outcon,
-                            expin, in_units, wt_scl,
-                            pscale_ratio=pscale_ratio, uniqid=self.uniqid,
-                            xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
-                            pixfrac=self.pixfrac, kernel=self.kernel,
-                            fillval=self.fillval)
+                  self.outsci, self.outwht, self.outcon,
+                  expin, in_units, wt_scl,
+                  pscale_ratio=pscale_ratio, uniqid=self.uniqid,
+                  xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
+                  pixfrac=self.pixfrac, kernel=self.kernel,
+                  fillval=self.fillval)
 
 
     def blot_image(self, blotwcs, interp='poly5', sinscl=1.0):

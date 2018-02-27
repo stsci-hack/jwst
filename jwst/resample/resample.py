@@ -200,7 +200,6 @@ class ResampleData:
                     wht_type=self.drizpars['wht_type'],
                     good_bits=self.drizpars['good_bits'])
                 driz.add_image(img.data, img.meta.wcs, inwht=inwht,
-                        expin=img.meta.exposure.exposure_time,
                         pscale_ratio=outwcs_pscale / wcslin_pscale)
 
             # Update some basic exposure time values based on all the inputs
