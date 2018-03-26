@@ -99,16 +99,27 @@ class OutlierDetection:
             num_inputs = self.inputs.data.shape[0]
             log.debug("Converting CubeModel to ModelContainer with {} images".
                       format(num_inputs))
-            for i in range(self.inputs.data.shape[0]):
+            for i in range(num_inputs):
                 image = datamodels.ImageModel(data=self.inputs.data[i],
                                               err=self.inputs.err[i],
                                               dq=self.inputs.dq[i])
-                image.meta = self.inputs.meta
+                image.update(self.inputs)
+                image.meta.wcs = self.inputs.meta.wcs
                 image.wht = build_driz_weight(image,
                                               wht_type='exptime',
                                               good_bits=bits)
                 self.input_models.append(image)
             self.converted = True
+
+    def _revert_inputs(self, product):
+        """ Convert model into same format as original inputs"""
+        output_product = product
+        if self.converted:
+            output_product = self.inputs.copy()
+            for i, model in enumerate(product):
+                output_product.data[i] = model.data
+
+        return output_product
 
     def _get_outlier_pars(self):
         """Extract outlier detection parameters from reference file."""
@@ -226,12 +237,12 @@ class OutlierDetection:
             blot_models = self.blot_median(median_model)
             if save_intermediate_results:
                 log.info("Writing out BLOT images...")
-                for model in blot_models:
-                    model_path = self.make_output_path(
-                        basename=model.meta.filename,
-                        suffix='blot'
-                    )
-                    model.save(model_path)
+                blot_output = self._revert_inputs(blot_models)
+                model_path = self.make_output_path(
+                    basename=blot_output.meta.filename,
+                    suffix='blot'
+                )
+                blot_output.save(model_path)
         else:
             # Median image will serve as blot image
             blot_models = datamodels.ModelContainer()
