@@ -584,7 +584,7 @@ class IFUCubeData(object):
                         slice_wcs = nirspec.nrs_wcs_set_input(input_model, i)
                         x,y = wcstools.grid_from_bounding_box(slice_wcs.bounding_box,
                                                               step=(1,1), center=True)
-                        
+
                         #NIRSPEC TEMPORARY FIX FOR WCS 1 BASED and NOT 0 BASED
                         # NIRSPEC team delivered transforms that are valid for x,y in 1 based system
                         #x = x + 1
@@ -683,7 +683,7 @@ class IFUCubeData(object):
         IFUCube = datamodels.IFUCubeModel(data=data, dq=dq_cube, err=err_cube, weightmap=idata)
         IFUCube.update(self.input_models[j])
         IFUCube.meta.filename = self.output_name
-        
+
         self.blend_output_metadata(IFUCube)
 #______________________________________________________________________
         if self.output_type == 'single':
@@ -868,9 +868,8 @@ class IFUCubeData(object):
 
         """Create new output metadata based on blending all input metadata."""
         # Run fitsblender on output product
-        input_list = [i.meta.filename for i in self.input_models]
         output_file = IFUCube.meta.filename
 
         log.info('Blending metadata for {}'.format(output_file))
-        blendmeta.blendmodels(IFUCube, inputs=input_list,
+        blendmeta.blendmodels(IFUCube, inputs=self.input_models,
                               output=output_file)
