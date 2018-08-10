@@ -173,7 +173,6 @@ class ResampleSpecData:
 
         bounding_box = resample_utils.bounding_box_from_shape(self.data_size)
         output_wcs.bounding_box = bounding_box
-
         return output_wcs
 
     def do_drizzle(self, **pars):

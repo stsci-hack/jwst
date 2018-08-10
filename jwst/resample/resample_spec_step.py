@@ -19,6 +19,7 @@ class ResampleSpecStep(ResampleStep):
     """
 
     def process(self, input):
+
         input = datamodels.open(input)
 
         # If single DataModel input, wrap in a ModelContainer
