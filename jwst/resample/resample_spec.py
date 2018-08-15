@@ -70,6 +70,7 @@ class ResampleSpecData:
         self.blank_output.meta.wcs = self.output_wcs
         self.output_models = datamodels.ModelContainer()
 
+
     def build_interpolated_output_wcs(self, refmodel=None):
         """
         Create a spatial/spectral WCS output frame
