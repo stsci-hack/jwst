@@ -19,7 +19,6 @@ class ResampleSpecStep(ResampleStep):
     """
 
     def process(self, input):
-
         input = datamodels.open(input)
 
         # If single DataModel input, wrap in a ModelContainer
@@ -50,6 +49,7 @@ class ResampleSpecStep(ResampleStep):
             # result is a DrizProductModel
             result = self._process_slit(input_models)
         return result
+
 
     def _process_multislit(self, input_models):
         """
@@ -83,12 +83,13 @@ class ResampleSpecStep(ResampleStep):
                 result.products.append(drizzled_models[0])
                 result.products[-1].bunit_data = container[0].meta.bunit_data
             else:
-                # When each input is resampled to its own output
+                # For singlely-resampled images
                 for model in drizzled_models:
                     result.products.append(model)
                     result.products[-1].bunit_data = container[0].meta.bunit_data
 
         return result
+
 
     def _process_slit(self, input_models):
         """
