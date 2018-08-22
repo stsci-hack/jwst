@@ -141,7 +141,6 @@ class DMS_Level3_Base(DMSBaseMixin, Association):
             result = not result
         return result
 
-    @property
     def dms_product_name(self):
         """Define product name.
 
@@ -252,7 +251,7 @@ class DMS_Level3_Base(DMSBaseMixin, Association):
 
         # Product-based updates
         product = self.current_product
-        product['name'] = self.dms_product_name
+        product['name'] = self.dms_product_name()
 
     def make_member(self, item):
         """Create a member from the item
@@ -554,7 +553,7 @@ class Utility():
 # Define default product name filling
 format_product = FormatTemplate(
     key_formats={
-        'source_id': ['s{:05d}', 's{:s}']
+        'source_id': 's{:05d}'
     }
 )
 

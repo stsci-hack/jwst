@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-import warnings
 
 import pytest
 from astropy.time import Time
@@ -129,14 +128,6 @@ def test_open():
 
     with open_model(FITS_FILE) as dm:
         assert isinstance(dm, QuadModel)
-
-def test_open_warning():
-    with warnings.catch_warnings(record=True) as w:
-        # Cause all warnings to always be triggered.
-        warnings.simplefilter("always")
-        with open_model(FITS_FILE) as model:
-            class_name = model.__class__.__name__
-            assert class_name in str(w[0].message)
 
 
 def test_copy():
@@ -442,27 +433,6 @@ def test_hasattr():
 
     has_filename = model.meta.hasattr('filename')
     assert not has_filename, "Check that filename does not exist"
-
-def test_info():
-    with open_model(FITS_FILE) as model:
-        info = model.info()
-    matches = 0
-    for line in info.split("\n"):
-        words = line.split()
-        if len(words) > 0:
-            if words[0] == "data":
-                matches += 1
-                assert words[1] == "(32,40,35,5)", "Correct size for data"
-                assert words[2] == "float32", "Correct type for data"
-            elif words[0] == "dq":
-                matches += 1
-                assert words[1] == "(32,40,35,5)", "Correct size for dq"
-                assert words[2] == "uint32", "Correct type for dq"
-            elif words[0] == "err":
-                matches += 1
-                assert words[1] == "(32,40,35,5)", "Correct size for err"
-                assert words[2] == "float32", "Correct type for err"
-    assert matches== 3, "Check all extensions are described"
 
 def test_multislit_model():
     data = np.arange(24, dtype=np.float32).reshape((6, 4))

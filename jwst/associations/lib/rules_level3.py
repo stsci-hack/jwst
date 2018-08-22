@@ -5,15 +5,13 @@ import logging
 from jwst.associations.registry import RegistryMarker
 from jwst.associations.lib.dms_base import (ACQ_EXP_TYPES, Constraint_TSO)
 from jwst.associations.lib.rules_level3_base import *
-from jwst.associations.lib.rules_level3_base import format_product
 
 __all__ = [
     'Asn_AMI',
     'Asn_Coron',
     'Asn_IFU',
     'Asn_Image',
-    'Asn_SpectralSource',
-    'Asn_SpectralTarget',
+    'Asn_Spectral',
     'Asn_TSO',
     'Asn_WFSCMB',
     'Asn_WFSS_NIS',
@@ -101,37 +99,8 @@ class Asn_WFSCMB(AsnMixin_Science):
 
 
 @RegistryMarker.rule
-class Asn_SpectralTarget(AsnMixin_Spectrum):
-    """Slit-like, target-based, or single-object spectrographic modes"""
-
-    def __init__(self, *args, **kwargs):
-
-        # Setup for checking.
-        self.constraints = Constraint([
-            Constraint(
-                [Constraint_TSO()],
-                reduce=Constraint.notany
-            ),
-            Constraint_Optical_Path(),
-            Constraint_Target(),
-            DMSAttrConstraint(
-                name='exp_type',
-                sources=['exp_type'],
-                value=(
-                    'mir_lrs-fixedslit'
-                    '|mir_lrs_slitless'
-                ),
-                force_unique=False
-            )
-        ])
-
-        # Check and continue initialization.
-        super(Asn_SpectralTarget, self).__init__(*args, **kwargs)
-
-
-@RegistryMarker.rule
-class Asn_SpectralSource(AsnMixin_Spectrum):
-    """Slit-like, multi-object spectrographic modes"""
+class Asn_Spectral(AsnMixin_Spectrum):
+    """All slit-like spectral exposures"""
 
     def __init__(self, *args, **kwargs):
 
@@ -144,163 +113,13 @@ class Asn_SpectralSource(AsnMixin_Spectrum):
             Constraint_Optical_Path(),
             Constraint_Target(),
             Constraint(
-                [
-                    DMSAttrConstraint(
-                        name='exp_type',
-                        sources=['exp_type'],
-                        value=(
-                            'nrc_grism'
-                            '|nrc_tsgrism'
-                            '|nrc_wfss'
-                            '|nrs_autoflat'
-                            '|nrs_autowave'
-                            '|nrs_fixedslit'
-                        ),
-                        force_unique=False
-                    ),
-                    Constraint_MSA()
-                ],
+                [Constraint_Spectral(), Constraint_MSA()],
                 reduce=Constraint.any
             )
         ])
 
         # Check and continue initialization.
-        super(Asn_SpectralSource, self).__init__(*args, **kwargs)
-
-    @property
-    def dms_product_name(self):
-        """Define product name.
-
-        Returns
-        -------
-        product_name: str
-            The product name
-        """
-        instrument = self._get_instrument()
-
-        opt_elem = self._get_opt_element()
-
-        subarray = self._get_subarray()
-        if len(subarray):
-            subarray = '-' + subarray
-
-        product_name_format = (
-            'jw{program}-{acid}'
-            '_{source_id}'
-            '_{instrument}'
-            '_{opt_elem}{subarray}'
-        )
-        product_name = format_product(
-            product_name_format,
-            program=self.data['program'],
-            acid=self.acid.id,
-            instrument=instrument,
-            opt_elem=opt_elem,
-            subarray=subarray,
-        )
-
-        return product_name.lower()
-
-
-@RegistryMarker.rule
-class Asn_SpectralTarget(AsnMixin_Spectrum):
-    """Slit-like, target-based, or single-object spectrographic modes"""
-
-    def __init__(self, *args, **kwargs):
-
-        # Setup for checking.
-        self.constraints = Constraint([
-            Constraint(
-                [Constraint_TSO()],
-                reduce=Constraint.notany
-            ),
-            Constraint_Optical_Path(),
-            Constraint_Target(),
-            DMSAttrConstraint(
-                name='exp_type',
-                sources=['exp_type'],
-                value=(
-                    'mir_lrs-fixedslit'
-                    '|mir_lrs_slitless'
-                    '|nis_soss'
-                ),
-                force_unique=False
-            )
-        ])
-
-        # Check and continue initialization.
-        super(Asn_SpectralTarget, self).__init__(*args, **kwargs)
-
-
-@RegistryMarker.rule
-class Asn_SpectralSource(AsnMixin_Spectrum):
-    """Slit-like, multi-object spectrographic modes"""
-
-    def __init__(self, *args, **kwargs):
-
-        # Setup for checking.
-        self.constraints = Constraint([
-            Constraint(
-                [Constraint_TSO()],
-                reduce=Constraint.notany
-            ),
-            Constraint_Optical_Path(),
-            Constraint_Target(),
-            Constraint(
-                [
-                    DMSAttrConstraint(
-                        name='exp_type',
-                        sources=['exp_type'],
-                        value=(
-                            'nrc_wfss'
-                            '|nrs_autoflat'
-                            '|nrs_autowave'
-                            '|nrs_fixedslit'
-                        ),
-                        force_unique=False
-                    ),
-                    Constraint_MSA()
-                ],
-                reduce=Constraint.any
-            )
-        ])
-
-        # Check and continue initialization.
-        super(Asn_SpectralSource, self).__init__(*args, **kwargs)
-
-    @property
-    def dms_product_name(self):
-        """Define product name.
-
-        Returns
-        -------
-        product_name: str
-            The product name
-        """
-        instrument = self._get_instrument()
-
-        opt_elem = self._get_opt_element()
-
-        subarray = self._get_subarray()
-        if len(subarray):
-            subarray = '-' + subarray
-
-        product_name_format = (
-            'jw{program}-{acid}'
-            '_{source_id}'
-            '_{instrument}'
-            '_{opt_elem}{subarray}'
-        )
-        product_name = format_product(
-            product_name_format,
-            program=self.data['program'],
-            acid=self.acid.id,
-            instrument=instrument,
-            opt_elem=opt_elem,
-            subarray=subarray,
-        )
-
-        return product_name.lower()
+        super(Asn_Spectral, self).__init__(*args, **kwargs)
 
 
 @RegistryMarker.rule
@@ -318,7 +137,6 @@ class Asn_IFU(AsnMixin_Spectrum):
         # Check and continue initialization.
         super(Asn_IFU, self).__init__(*args, **kwargs)
 
-    @property
     def dms_product_name(self):
         """Define product name."""
         target = self._get_target()
@@ -496,17 +314,17 @@ class Asn_ACQ_Reprocess(DMS_Level3_Base):
 
         # Setup for checking.
         self.constraints = Constraint([
-            DMSAttrConstraint(
-                sources=['exp_type'],
-                value='|'.join(ACQ_EXP_TYPES),
-                force_unique=False
-            ),
-            SimpleConstraint(
-                name='force_fail',
-                test=lambda x, y: False,
-                value='anything but None',
-                force_reprocess=ProcessList.NONSCIENCE
-            )
-        ])
+                DMSAttrConstraint(
+                    sources=['exp_type'],
+                    value='|'.join(ACQ_EXP_TYPES),
+                    force_unique=False
+                ),
+                SimpleConstraint(
+                    name='force_fail',
+                    test=lambda x, y: False,
+                    value='anything but None',
+                    force_reprocess=ProcessList.NONSCIENCE
+                )
+            ])
 
         super(Asn_ACQ_Reprocess, self).__init__(*args, **kwargs)
