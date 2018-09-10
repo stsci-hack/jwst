@@ -579,6 +579,7 @@ def ols_ramp_fit(model, buffsize, save_opt, readnoise_model, gain_model,
 
     # For multiple-integration datasets, will output integration-specific
     #    results to separate file named <basename> + '_integ.fits'
+    int_times = None
     if n_int > 1:
         if pipe_utils.is_tso(model) and hasattr(model, 'int_times'):
             int_times = model.int_times
